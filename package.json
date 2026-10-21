@@ -3,7 +3,7 @@
   "name": "kind-words",
   "title": "Kind Words",
   "description": "Random compliments and gratitude prompts to lift the mood.",
-  "icon": "extension-icon.png",
+  "icon": "assets/extension-icon.png",
   "author": "almatkai",
   "categories": [
     "Fun"
