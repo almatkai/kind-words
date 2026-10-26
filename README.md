@@ -29,3 +29,5 @@ Saying something kind is often gated less by feeling and more by friction. Kind 
 ## Privacy
 
 Everything runs locally. No network calls, no analytics, no tracking. Compliments and prompts ship as static JSON in the extension itself.
+
+Rust V2 development port and review notes: [v2/README.md](v2/README.md).

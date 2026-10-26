@@ -1,0 +1,54 @@
+{
+  "sourceHead": "a1bf2ff51f80251e24eaeb6d8602b5a8145d1892",
+  "branch": "feat/native-v2-rust",
+  "sdkRev": "e955911f0bf5b558f9d3eb5183df0adc95c22af2",
+  "hostRev": "ea100cee3f69711de12485ba061950c5fc65258f",
+  "toolVersions": {
+    "rustStable": "rustc 1.98.0 (88d9e12ae 2026-08-18)",
+    "rustMSRV": "rustc 1.85.0 (4d91de4e4 2025-02-17)",
+    "node": "v26.7.0",
+    "npm": "12.0.2",
+    "python": "Python 3.9.6"
+  },
+  "passed": [
+    "stable and 1.85 fmt --check",
+    "stable and 1.85 all-target tests (7 distinct domain/host tests; 8 executions including the QA binary target)",
+    "stable and 1.85 strict all-target Clippy",
+    "stable and 1.85 Windows GNU all-target cargo check",
+    "exact-lock V1 declared npm test and typecheck in disposable copy",
+    "164 executed original-source cases against real SDK process",
+    "protocol cancellation/timeout/ACK/retry/stale/search/capacity/EOF",
+    "atomic bounded tone persistence, profile/restart/guards/failed-input retry",
+    "actual schema plus 10 negatives and exact Recommended row",
+    "pinned renderer callbacks before/after patch",
+    "patch applied to frozen-fixture copy only",
+    "extracted production ARM64 dev ZIP process success/error/retry",
+    "all V1 exact bytes except short README link; HEAD same; index empty; complete visible inventory",
+    "26 unmodified pinned original renderer default-filter oracles vs real Rust pipes",
+    "fresh isolated HTTPS SDK release build of final production sources",
+    "Round 2 exact Git platform fixture and executable extracted visibility router/platform contract; full compiled-source/default-response binding",
+    "Round 2 deterministic, fresh production and extracted dev-package pipes: clipboard object / visibility null, clipboard null rejection, ten invalid visibility values, host error, 5-second close timeout, cancellation, close-only retry and repeated/stale Retry rejection"
+  ],
+  "blocked": {
+    "WindowsMSVC": "Attempt failed E0463: target not installed. No installation attempted.",
+    "XERJFinalUpdate": "Frozen dataset/schema evolution at v2/Cargo.toml; same prefix retained; new code search coverage incomplete."
+  },
+  "notRun": [
+    "Full host build/typecheck and DOM/live GUI",
+    "Real clipboard/window/HUD/focus effects",
+    "Linked Windows binary or Windows OS execution",
+    "Installation, publication, signing/notarization, PR/commit/push/delete"
+  ],
+  "publicationState": "development review only; clone intact and unstaged",
+  "correctedTestDefect": {
+    "previous": "reply(result=None) and generic defaults fabricated {ok:true} visibility responses; earlier tests did not validate pinned actual visibility completion",
+    "now": "omitted sentinel; explicit None is literal null; default visibility response executes exact pinned router/platform arms; clipboard object remains strict",
+    "hostPlatformSha256": "33e6b7ec5b305ee3ffb857985d0483e54891998ff2a51c10f12695b80a1953e6"
+  },
+  "round2Evidence": {
+    "primarySuiteLog": ".qa/round2-final-suite.log",
+    "freshBuildReport": "evidence/fresh-build.json",
+    "devPackageReport": "evidence/dev-package.json",
+    "gnuLog": ".qa/round2-gnu.log"
+  }
+}

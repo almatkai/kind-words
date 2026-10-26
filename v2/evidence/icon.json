@@ -1,0 +1,11 @@
+{
+  "upstreamUrl": "https://raw.githubusercontent.com/raycast/extensions/6734d85992290066fd31a7f5bee3cca3d3545a1a/extensions/kind-words/assets/extension-icon.png",
+  "commit": "6734d85992290066fd31a7f5bee3cca3d3545a1a",
+  "ownSourceSha": "a1bf2ff51f80251e24eaeb6d8602b5a8145d1892",
+  "ownGitPath": "assets/extension-icon.png",
+  "byteLength": 115782,
+  "sha256": "29cfe562818575c1b217778ae3aff55cb646925feffd0d36aed69082f2787776",
+  "format": "PNG",
+  "converted": false,
+  "sameBytesAsOwn": true
+}

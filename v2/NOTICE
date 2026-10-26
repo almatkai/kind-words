@@ -1,0 +1,25 @@
+Kind Words — external Rust V2 development port
+
+Original extension and data: almatkai, source a1bf2ff51f80251e24eaeb6d8602b5a8145d1892
+https://github.com/almatkai/kind-words
+Original Raycast source/icon: raycast/extensions, 6734d85992290066fd31a7f5bee3cca3d3545a1a
+https://github.com/raycast/extensions/tree/6734d85992290066fd31a7f5bee3cca3d3545a1a/extensions/kind-words
+Original PNG SHA256: 29cfe562818575c1b217778ae3aff55cb646925feffd0d36aed69082f2787776
+Upstream extension-specific LICENSE returned HTTP 404; repository-root MIT LICENSE
+is preserved at notices/upstream-repository-LICENSE. No separate asset grant is invented.
+The own-repository LICENSE is preserved verbatim, including its literal backslash-n
+sequences, in LICENSE and notices/source-LICENSE.
+
+Tezbar extension SDK 0.1.1, immutable git revision
+e955911f0bf5b558f9d3eb5183df0adc95c22af2, Apache-2.0.
+SDK LICENSE and NOTICE are reproduced in notices/.
+Host fixture sources: Tezbar ea100cee3f69711de12485ba061950c5fc65258f,
+Apache-2.0; original host LICENSE is at fixtures/host/LICENSE.
+Host sources/patches are test evidence only and are not linked into the executable.
+
+Rust dependencies and test-only JavaScript dependencies retain their authentic
+license texts under notices/rust/ and notices/javascript/. Exact origins, versions,
+text hashes and missing-text evidence are in notices/dependencies.json. Cargo.lock,
+fixtures/source/package-lock.json and qa/package-lock.json pin their resolutions.
+Metadata-only declarations are not represented as recovered license text.
+No Node.js, JavaScript engine, app or Tauri code is needed by the Rust executable.

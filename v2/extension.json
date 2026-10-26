@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 3,
+  "id": "com.tezbar.native.kind-words",
+  "slug": "kind-words",
+  "name": "Kind Words",
+  "version": "0.1.0",
+  "description": "Random compliments and gratitude prompts to lift the mood.",
+  "icon": "resources/extension-icon.png",
+  "runtime": "rust",
+  "execution": "process",
+  "protocolVersion": 1,
+  "repository": "https://github.com/almatkai/kind-words",
+  "platforms": [
+    "macOS",
+    "Windows"
+  ],
+  "replaces": [
+    "com.tezbar.kind-words",
+    "raycast.kind-words"
+  ],
+  "preferences": [],
+  "capabilities": [
+    "clipboard.write",
+    "window.visibility"
+  ],
+  "artifacts": {},
+  "commands": [
+    {
+      "name": "random-compliment",
+      "title": "Random Compliment",
+      "description": "Browse compliments with one preselected at random; filter by tone.",
+      "mode": "view",
+      "platforms": [
+        "macOS",
+        "Windows"
+      ],
+      "runtime": "rust",
+      "icon": "resources/extension-icon.png",
+      "refreshMs": null,
+      "timeoutMs": 10000,
+      "concurrency": "serialize"
+    },
+    {
+      "name": "quick-compliment",
+      "title": "Quick Compliment",
+      "description": "Copy a random compliment instantly.",
+      "mode": "no-view",
+      "platforms": [
+        "macOS",
+        "Windows"
+      ],
+      "runtime": "rust",
+      "icon": "resources/extension-icon.png",
+      "refreshMs": null,
+      "timeoutMs": 10000,
+      "concurrency": "serialize"
+    },
+    {
+      "name": "gratitude-note",
+      "title": "Gratitude Note",
+      "description": "Browse gratitude prompts with usage notes and opener examples.",
+      "mode": "view",
+      "platforms": [
+        "macOS",
+        "Windows"
+      ],
+      "runtime": "rust",
+      "icon": "resources/extension-icon.png",
+      "refreshMs": null,
+      "timeoutMs": 10000,
+      "concurrency": "serialize"
+    }
+  ],
+  "verification": [
+    {
+      "platform": "macOS",
+      "state": "not-run",
+      "note": "Isolated native ARM64 process checks pass; real host GUI/clipboard not run."
+    },
+    {
+      "platform": "Windows",
+      "state": "not-run",
+      "note": "No Windows OS run; cross-check results in QA.md."
+    }
+  ]
+}
