@@ -1,0 +1,21 @@
+# INACTIVE EXAMPLE: kept under v2/, not .github/workflows/. No publication.
+name: kind-words-rust-v2-checks
+on: [push, pull_request]
+jobs:
+  rust:
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+        toolchain: [stable, '1.85.0']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.toolchain }}
+          components: rustfmt, clippy
+      - run: cargo fmt --manifest-path v2/Cargo.toml --check
+      - run: cargo test --manifest-path v2/Cargo.toml --locked --all-targets
+      - run: cargo clippy --manifest-path v2/Cargo.toml --locked --all-targets -- -D warnings
+# Full oracle/renderer/schema/process QA uses qa/run.sh on a Unix review machine.
+# A Windows CI run is future evidence, not evidence supplied by this example.

@@ -1,0 +1,26 @@
+{
+  "command": [
+    "cargo",
+    "+stable",
+    "build",
+    "--locked",
+    "--release",
+    "--bin",
+    "tezbar-kind-words"
+  ],
+  "target": "aarch64-apple-darwin",
+  "newEmptyCargoHomeAndTarget": true,
+  "httpsSdkFetched": true,
+  "sdkRev": "e955911f0bf5b558f9d3eb5183df0adc95c22af2",
+  "productionSourceHashes": {
+    "Cargo.toml": "40aeef61121dd5d3bf77f1e626721d34991224b4c1338e784f37a78dc113294a",
+    "Cargo.lock": "83ee864556fcb30182fa9e99738bef38cb1f6937f384e56691746c6ba634483b",
+    "src/domain.rs": "c10d606ef51b0e1b6222cbcd9c2db341c87c5a88cea51d164eb788198bcdd573",
+    "src/lib.rs": "d584ae419feb46e107cd856a133451543d0f5c8d9be3673d3b6f2dbaafa14699",
+    "src/main.rs": "30fdb98a8721fb7a1212b16d84c0b2b9db1b61ed8724d27a3aab1fcb99f1c8ca",
+    "src/store.rs": "263886f919f54a5c1557b97205822895028b6e206fc4bf9c8592c0d558a06d83"
+  },
+  "executableSha256": "d9805881b2c57f61723ad87bc3f55cf1daee2be28e7c94a046e757fe5b739dab",
+  "log": ".qa/round2-fresh-c3tokw3f/build.log",
+  "smoke": "actual fresh production SDK pipes: method-specific completion, normal browsing/quick, null clipboard rejection, invalid/error/timeout/cancel close, close-only Retry and stale Retry rejection; synthetic OS producers only"
+}

@@ -1,0 +1,6 @@
+{
+  "name": "kind-words-v2-isolated-schema-qa",
+  "private": true,
+  "version": "0.0.0",
+  "devDependencies": {"ajv": "8.17.1", "ajv-formats": "3.0.1"}
+}

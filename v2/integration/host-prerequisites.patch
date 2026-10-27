@@ -1,0 +1,215 @@
+--- a/src-tauri/src/native_core/extensions/registry.rs
++++ b/src-tauri/src/native_core/extensions/registry.rs
+@@ -15,6 +15,7 @@
+     slug: String,
+     path: PathBuf,
+     manifest: Value,
++    resource_root: PathBuf,
+     data_dir: PathBuf,
+ }
+ 
+@@ -73,9 +74,10 @@
+             };
+             let Ok(slug) = slug(name) else { continue };
+             let native = name.starts_with("com.tezbar.native.");
++            let mut resource_root = path.clone();
+             let mut manifest = if native {
+                 match super::process_install::resolve(ctx, name) {
+-                    Ok(package) => package.manifest,
++                    Ok(package) => { resource_root = package.dir; package.manifest },
+                     Err(error) => {
+                         // A damaged canonical directory is NEVER a Raycast package.
+                         let mut value = read_json(&path.join("package.json"))
+@@ -109,6 +111,7 @@
+                 slug,
+                 path,
+                 manifest,
++                resource_root,
+                 data_dir: ctx.paths.data_dir.clone(),
+             });
+         }
+@@ -127,9 +130,24 @@
+         .ok_or_else(|| format!("Extension is not installed: {id}"))
+ }
+ 
++/// Exact replacements are accepted only from verified installed manifests and
++/// only for commands actually covered on this platform. No slug guessing.
++pub(super) fn native_replacement(ctx: &CoreContext, id: &str, command: &str) -> Option<String> {
++    let mut matches = collect(ctx).into_iter().filter(|e| {
++        e.id.starts_with("com.tezbar.native.")
++            && e.manifest["healthError"].is_null()
++            && e.manifest["replaces"].as_array().is_some_and(|a| a.iter().any(|v| v.as_str() == Some(id)))
++            && e.manifest["commands"].as_array().is_some_and(|a| a.iter().any(|c| c["name"] == command && c["runtime"] == "rust" && compatible(c, true)))
++    });
++    let selected = matches.next()?.id;
++    matches.next().is_none().then_some(selected)
++}
++
+ /// Native implementations use the same discovery and platform rules as the launcher.
+ pub(super) fn installed_command(ctx: &CoreContext, id: &str, command: &str) -> Option<Installed> {
+-    let native = if id.starts_with("raycast.") {
++    let native = if let Some(canonical) = native_replacement(ctx, id, command) {
++        installed(ctx, &canonical).ok()
++    } else if id.starts_with("raycast.") {
+         let slug = slug(id).ok()?;
+         let canonical = super::v2_runtime::canonical_id(&slug);
+         installed(ctx, &canonical).ok()
+@@ -245,8 +263,8 @@
+         return None;
+     }
+     let mut candidates = vec![
+-        extension.path.join(relative),
+-        extension.path.join("assets").join(relative),
++        extension.resource_root.join(relative),
++        extension.resource_root.join("assets").join(relative),
+     ];
+     if extension.id.starts_with("com.tezbar.native.") {
+         if let Some(packages) = extension.path.parent() {
+@@ -309,8 +327,8 @@
+         return None;
+     }
+     let mut candidates = vec![
+-        extension.path.join(relative),
+-        extension.path.join("assets").join(relative),
++        extension.resource_root.join(relative),
++        extension.resource_root.join("assets").join(relative),
+     ];
+     if extension.id.starts_with("com.tezbar.native.") {
+         if let Some(packages) = extension.path.parent() {
+@@ -574,6 +592,7 @@
+     let extension = Installed {
+         id: id.into(),
+         slug: slug(id)?,
++        resource_root: path.clone(),
+         path,
+         manifest: Value::Null,
+         data_dir: ctx.paths.data_dir.clone(),
+--- a/src-tauri/src/native_core/extensions/native.rs
++++ b/src-tauri/src/native_core/extensions/native.rs
+@@ -615,7 +615,7 @@
+             self.dispatch(channel, body, id).await.map(Some)
+         } else if channel == "extension:run-command" {
+             let requested = body["extensionId"].as_str().unwrap_or("");
+-            if requested.starts_with("com.tezbar.native.") || v2_runtime::slug(requested).is_some()
++            if requested.starts_with("com.tezbar.native.") || v2_runtime::slug(requested).is_some() || registry::native_replacement(ctx, requested, body["commandName"].as_str().unwrap_or("")).is_some()
+             {
+                 self.launch(ctx, files, body).await
+             } else {
+@@ -641,7 +641,9 @@
+         }
+         let requested = body["extensionId"].as_str().ok_or("Missing extensionId")?;
+         let command = body["commandName"].as_str().ok_or("Missing commandName")?;
+-        let canonical = if requested.starts_with("com.tezbar.native.") {
++        let canonical = if let Some(canonical) = registry::native_replacement(ctx, requested, command) {
++            canonical
++        } else if requested.starts_with("com.tezbar.native.") {
+             requested.to_string()
+         } else {
+             v2_runtime::canonical_id(v2_runtime::slug(requested).ok_or("Unknown extension")?)
+--- a/src/renderer/src/raycast-api/list-runtime.tsx
++++ b/src/renderer/src/raycast-api/list-runtime.tsx
+@@ -26,6 +26,7 @@
+ }
+ 
+ type ListAccessory = {
++  value?: string
+   actionId?: string
+   options: Array<{ title: string; value: string; icon?: unknown }>
+ }
+@@ -48,6 +49,7 @@
+   walk(node)
+ 
+   return {
++    value: typeof node.props?.value === 'string' ? node.props.value : undefined,
+     actionId: typeof node.props?.actionId === 'string' ? node.props.actionId : undefined,
+     options,
+   }
+@@ -531,7 +533,7 @@
+   )
+   const [selected, setSelected] = useState(0)
+   const [accessoryValue, setAccessoryValue] = useState(
+-    searchAccessory?.options[0]?.value ?? '',
++    searchAccessory?.value ?? searchAccessory?.options[0]?.value ?? '',
+   )
+   const [loadingMore, setLoadingMore] = useState(false)
+ 
+@@ -552,6 +554,7 @@
+   useEffect(() => {
+     setAccessoryValue((current) => {
+       if (!searchAccessory || searchAccessory.options.length === 0) return ''
++      if (searchAccessory.value !== undefined && searchAccessory.options.some((option) => option.value === searchAccessory.value)) return searchAccessory.value
+       return searchAccessory.options.some((option) => option.value === current)
+         ? current
+         : searchAccessory.options[0]?.value ?? ''
+@@ -594,6 +597,22 @@
+     return clientSideFilter(rows, query)
+   }, [colorConversionRows, hasServerSearch, rows, query])
+ 
++  useEffect(() => {
++    const requested = root.props?.selectedItemId
++    if (typeof requested !== 'string') return
++    const index = filteredRows.findIndex((row) => row.id === requested)
++    if (index >= 0) setSelected(index)
++  }, [root.props?.selectedItemId, filteredRows])
++
++  const selectRow = (index: number): void => {
++    setSelected(index)
++    const row = filteredRows[index]
++    const actionId = root.props?.onSelectionActionId
++    if (row && row.id !== root.props?.selectedItemId && typeof actionId === 'string') {
++      onRunPrimaryAction(actionId, { value: row.id })
++    }
++  }
++
+   const groupedSections = useMemo(() => groupBySection(filteredRows), [filteredRows])
+   const selectedRow = filteredRows[selected]
+   const selectedAction = actions.find((action) => selectedRow?.actionIds?.[0] === action.id)
+@@ -651,14 +670,14 @@
+     if (e.key === 'ArrowDown') {
+       e.preventDefault()
+       const next = Math.min(selected + 1, filteredRows.length - 1)
+-      setSelected(next)
++      selectRow(next)
+       if (hasMore && next >= filteredRows.length - 3) void requestMore()
+       return
+     }
+ 
+     if (e.key === 'ArrowUp') {
+       e.preventDefault()
+-      setSelected((i) => Math.max(i - 1, 0))
++      selectRow(Math.max(selected - 1, 0))
+       return
+     }
+ 
+@@ -814,7 +833,7 @@
+                           <button
+                             type="button"
+                             data-idx={globalIdx}
+-                            onMouseEnter={() => setSelected(globalIdx)}
++                            onMouseEnter={() => selectRow(globalIdx)}
+                             onClick={() => {
+                               setSelected(globalIdx)
+                               if (row.copyText) {
+--- a/src/renderer/src/raycast-api/detail-runtime.tsx
++++ b/src/renderer/src/raycast-api/detail-runtime.tsx
+@@ -553,7 +553,7 @@
+           </button>
+           <div className="text-[12px] font-semibold text-ink-2">{title}</div>
+           <div className="ml-auto flex items-center gap-1">
+-            <button type="button" className="btn btn-ghost" onClick={onRunPrimaryAction}>
++            <button type="button" className="btn btn-ghost" onClick={() => onRunPrimaryAction()}>
+               Enter
+             </button>
+             <button type="button" className="btn btn-ghost" onClick={onOpenActions}>
+--- a/src/renderer/ExtensionRuntimeView.tsx
++++ b/src/renderer/ExtensionRuntimeView.tsx
+@@ -661,7 +661,8 @@
+               if (notice) showActionNotice(notice.message, isFormSurface)
+ 
+               if (result.mode === 'no-view') {
+-                setState((prev) => ({ ...prev, message: undefined }))
++                await window.tezbar.extensionDisposeSession({ sessionId: state.sessionId })
++                if (currentSession.current === sessionOwner) onBack()
+                 return
+               }
+ 
